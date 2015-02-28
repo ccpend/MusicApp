@@ -1,6 +1,5 @@
 void function(imports, exports) {
-  var MusicVisualizer, getInstance, bind, ac
-  , _load, _decode, _visualize;
+  var MusicVisualizer, getInstance, bind, ac;
   // ac
   ac = new (imports.AudioContext || imports.webkitAudioContext)();
 
@@ -31,20 +30,23 @@ void function(imports, exports) {
     this.gainNode.connect(ac.destination);
     this.analyser.connect(this.gainNode);
     this.xhr = new XMLHttpRequest();
-    _visualize(this.analyser, options.visualizer);
+    this.visualizer = options.visualizer;
+    this.visualize();
 	};
 
-  _load = function(xhr, url, callback) {
-    xhr.abort();
-    xhr.open('GET', url);
-    xhr.responseType = 'arraybuffer';
-    xhr.onload = function() {
-      callback(xhr.response);
+  MusicVisualizer.prototype.load = function(url, callback) {
+    var that;
+    that = this;
+    this.xhr.abort();
+    this.xhr.open('GET', url);
+    this.xhr.responseType = 'arraybuffer';
+    this.xhr.onload = function() {
+      callback(that.xhr.response);
     };
-    xhr.send();
+    this.xhr.send();
   };
 
-  _decode = function(arraybuffer, callback) {
+  MusicVisualizer.prototype.decode = function(arraybuffer, callback) {
     ac.decodeAudioData(arraybuffer, function(buffer) {
       callback(buffer);
     }, function(err) {
@@ -52,15 +54,16 @@ void function(imports, exports) {
     });
   };
 
-  _visualize = function(analyser, visualizer) {
-    var arr, requestAnimationFrame;
-    arr = new Uint8Array(analyser.frequencyBinCount);
+  MusicVisualizer.prototype.visualize = function() {
+    var arr, requestAnimationFrame, that;
+    that = this;
+    arr = new Uint8Array(this.analyser.frequencyBinCount);
     requestAnimationFrame = imports.requestAnimationFrame ||
                             imports.webkitRequestAnimationFrame ||
                             imports.mozRequestAnimationFrame;
     requestAnimationFrame(function v () {
-      analyser.getByteFrequencyData(arr);
-      visualizer(arr);
+      that.analyser.getByteFrequencyData(arr);
+      that.visualizer(arr);
       requestAnimationFrame(v);
     });
   };
@@ -70,9 +73,9 @@ void function(imports, exports) {
     n = ++this.count;
     that = this;
     this.stop();
-    _load(this.xhr, url, function(arraybuffer) {
+    this.load(url, function(arraybuffer) {
       if (n !== that.count) return;
-      _decode(arraybuffer, function(buffer) {
+      that.decode(arraybuffer, function(buffer) {
         if (n !== that.count) return;
         bs = ac.createBufferSource();
         bs.connect(that.analyser);

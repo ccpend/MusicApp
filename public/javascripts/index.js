@@ -124,6 +124,7 @@ void function(imports, exports) {
     'size': size,
     'visualizer': canvasDraw
   });
+  
   triggerChange(volumeInput);
 
 }(window, window);
