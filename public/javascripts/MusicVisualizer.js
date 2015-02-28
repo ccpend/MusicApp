@@ -32,7 +32,7 @@ void function(imports, exports) {
     this.xhr = new XMLHttpRequest();
     this.visualizer = options.visualizer;
     this.visualize();
-	};
+  };
 
   MusicVisualizer.prototype.load = function(url, callback) {
     var that;
