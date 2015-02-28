@@ -1,0 +1,23 @@
+extends layout
+
+block content
+	section.control
+		header 
+			h1= title
+			p
+				label Volume
+				input#volume(type="range", min="0", max="100", value="40")
+			p
+				form
+					input#dotCanvas(type="radio", name="ctype", value="dot" checked="true")
+					label(for="dotCanvas") dot
+					input#columnCanvas(type="radio" name="ctype" value="column")
+					label(for="columnCanvas") column	
+			ul#list
+				each music in musics
+					li(title=music)= music
+	#box.box
+		
+block footerScript
+	script(src="/javascripts/MusicVisualizer.js")
+	script(src="/javascripts/index.js")
