@@ -76,7 +76,8 @@ void function(imports, exports) {
         dots.push({
           x: x,
           y: y,
-          color: color
+          color: color,
+          cap: 0
         });
       }
     };
@@ -92,12 +93,16 @@ void function(imports, exports) {
     }();    
     
     return function(arr) {
-      var i, w, h, r, o, g, line;
+      var i, w, h, r, o, g, line
+      , cw, capH;
+      // 清除画布
       ctx.clearRect(0, 0, width, height);
       i = 0;
       for ( ; i < size; i++) {
         if (type === 'column') {
           w = width / size;
+          cw = w * 0.6;
+          capH = cw;
           h = arr[i] / 256 * height;
           line = ctx.createLinearGradient(0, 0, 0, height);
           line.addColorStop(0, 'red');
@@ -105,6 +110,14 @@ void function(imports, exports) {
           line.addColorStop(1, 'green');
           ctx.fillStyle = line;
           ctx.fillRect(w * i, height - h, w * 0.6, h);
+          ctx.fillRect(w * i, height - dots[i].cap + capH, cw, capH);
+          dots[i].cap--;
+          if (dots[i].cap < 0) {
+            dots[i].cap = 0;
+          }
+          if (h > 0 && dots[i].cap < h + 40) {
+            dots[i].cap = h + 40
+          }
         } else if (type === 'dot') {
           ctx.beginPath();
           o = dots[i];
